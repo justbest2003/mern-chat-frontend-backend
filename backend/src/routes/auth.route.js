@@ -5,11 +5,15 @@ import {
   signin,
   logout,
   updateProfile,
+  checkAuth,
 } from "../controllers/auth.controller.js";
+
+import { protectedRoute } from "../middlewares/auth.middleware.js";
 
 router.post("/signup", signup);
 router.post("/signin", signin);
 router.post("/logout", logout);
-router.put("/updateProfile", updateProfile);
+router.put("/update-profile", protectedRoute, updateProfile);
+router.get("/check", protectedRoute, checkAuth);
 
 export default router;
