@@ -46,25 +46,31 @@ export const addFriend = async (req, res) => {
 
 export const acceptFriendRequest = async (req, res) => {
   try {
-    const { friendId } = req.body; //id ของเพื่อน
-    const userId = req.user._id; //id ของเรา
+    const { friendId } = req.body;
+    const userId = req.user._id;
     console.log("friend:", friendId, "user:", userId);
     const user = await User.findById(userId);
     const friend = await User.findById(friendId);
 
     if (!friend) return res.status(404).json({ message: "Friend not found" });
 
-    if (!user.friendRequests.includes(friendId))
-      return res
-        .status(404)
-        .json({ message: "No friend request from this user" });
-
-    user.friends.push(friendId);
-    friend.friends.push(userId);
-    return res.status(200).json({ message: "friend request accepted" });
+    if (user.friendRequests.includes(friendId)) {
+      user.friends.push(friendId);
+      friend.friends.push(userId);
+      user.friendRequests = user.friendRequests.filter(
+        (id) => friendId !== id.toString()
+      );
+      friend.friendRequests = friend.friendRequests.filter(
+        (id) => userId !== id.toString()
+      );
+      await user.save();
+      await friend.save();
+      return res.status(200).json({ message: "Friend request accepted" });
+    }
   } catch (error) {
     res
       .status(500)
       .json({ message: "Internal Server Error while accepting a new friend" });
   }
 };
+

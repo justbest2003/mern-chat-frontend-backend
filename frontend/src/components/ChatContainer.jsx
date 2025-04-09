@@ -60,6 +60,8 @@ const ChatContainer = () => {
     selectedUser,
   ]);
 
+  
+
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
